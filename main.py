@@ -1,6 +1,7 @@
 import pygame
 import random
 import math
+import asyncio
 
 # Initialize Pygame
 pygame.init()
@@ -89,59 +90,66 @@ collected_count = 0
 game_paused = False
 running = True
 
-while running:
-    clock.tick(FPS)
-    screen.fill(BG_COLOR)
+async def main():
+    global collected_count
+    global game_paused
+    global running
 
-    screen.blit(tree_img, (TREE_X, TREE_Y))
+    while running:
+        clock.tick(FPS)
+        screen.fill(BG_COLOR)
 
-    # Pause game after goal reached
-    if collected_count >= COLLECTION_GOAL and not game_paused:
-        game_paused = True
-        pygame.mixer.music.pause()
-        goal_sound.play()
-        pygame.time.set_timer(pygame.QUIT, 5000)  
+        screen.blit(tree_img, (TREE_X, TREE_Y))
 
-    # Event handling
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN and not game_paused:
-            for lemon in lemons:
-                lemon.check_click(event.pos)
+        # Pause game after goal reached
+        if collected_count >= COLLECTION_GOAL:
+            game_paused = True
+            pygame.mixer.music.pause()
+            goal_sound.play()
 
-    # Update and draw lemons
-    for lemon in lemons[:]:
-        # Always update falling lemons (even when paused)
-        if lemon.falling:
-            lemon.update()
+        # Event handling
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN and not game_paused:
+                for lemon in lemons:
+                    lemon.check_click(event.pos)
 
-        # Remove lemons that fall off screen
-        if lemon.is_off_screen():
-            lemons.remove(lemon)
-            # Respawn ONLY if game is NOT paused and lemon was NOT clicked
-            if not game_paused:
-                lemons.append(spawn_lemon(lemons))
-        else:
-            lemon.draw(screen)
+        # Update and draw lemons
+        for lemon in lemons[:]:
+            # Always update falling lemons (even when paused)
+            if lemon.falling:
+                lemon.update()
 
-    # Show collection goal at the top left
-    goal_text = font.render(f"Gather {COLLECTION_GOAL} lemons", True, (0, 0, 0))
-    screen.blit(goal_text, (20, 20))
+            # Remove lemons that fall off screen
+            if lemon.is_off_screen():
+                lemons.remove(lemon)
+                # Respawn ONLY if game is NOT paused and lemon was NOT clicked
+                if not game_paused and not lemon.clicked:
+                    lemons.append(spawn_lemon(lemons))
+            else:
+                lemon.draw(screen)
 
-    # Show how many lemons have been collected (under the goal)
-    label_text = font.render("Lemons Collected: ", True, (0, 0, 0))
-    screen.blit(label_text, (20, 50))
-    # Render the number in red, and place it next to the label
-    number_text = font.render(str(collected_count), True, (255, 0, 0))
-    screen.blit(number_text, (label_text.get_width() + 20, 50))
+        # Show collection goal at the top left
+        goal_text = font.render(f"Gather {COLLECTION_GOAL} lemons", True, (0, 0, 0))
+        screen.blit(goal_text, (20, 20))
 
-    # Draw end message if paused
-    if game_paused:
-        msg = big_font.render("You've collected enough lemons!", True, (0, 100, 0))
-        msg_rect = msg.get_rect(center=(WIDTH // 2, 100))
-        screen.blit(msg, msg_rect)
+        # Show how many lemons have been collected (under the goal)
+        label_text = font.render("Lemons Collected: ", True, (0, 0, 0))
+        screen.blit(label_text, (20, 50))
+        # Render the number in red, and place it next to the label
+        number_text = font.render(str(collected_count), True, (255, 0, 0))
+        screen.blit(number_text, (label_text.get_width() + 20, 50))
 
-    pygame.display.flip()
+        # Draw end message if paused
+        if game_paused:
+            msg = big_font.render("You've collected enough lemons!", True, (0, 100, 0))
+            msg_rect = msg.get_rect(center=(WIDTH // 2, 100))
+            screen.blit(msg, msg_rect)
 
-pygame.quit()
+        pygame.display.flip()
+        await asyncio.sleep(0)
+
+    pygame.quit()
+
+asyncio.run(main())
