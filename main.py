@@ -12,7 +12,7 @@ FPS = 60
 
 BG_COLOR = (173, 216, 230)
 NUM_LEMONS = 10
-COLLECTION_GOAL = 20
+COLLECTION_GOAL = 15
 
 LEMON_WIDTH = 30
 LEMON_HEIGHT = 15
@@ -37,7 +37,7 @@ TREE_Y = HEIGHT - tree_img.get_height()
 pygame.mixer.music.load("background_music.mp3")  # ✅ Load your file
 pygame.mixer.music.play(-1)  # ✅ Loop forever
 
-goal_sound = pygame.mixer.Sound("goal_reached.mp3")
+goal_sound = pygame.mixer.Sound("goal_reached.wav")
 
 # Lemon class
 class Lemon:
@@ -96,10 +96,11 @@ while running:
     screen.blit(tree_img, (TREE_X, TREE_Y))
 
     # Pause game after goal reached
-    if collected_count >= COLLECTION_GOAL:
+    if collected_count >= COLLECTION_GOAL and not game_paused:
         game_paused = True
         pygame.mixer.music.pause()
         goal_sound.play()
+        pygame.time.set_timer(pygame.QUIT, 5000)  
 
     # Event handling
     for event in pygame.event.get():
@@ -119,7 +120,7 @@ while running:
         if lemon.is_off_screen():
             lemons.remove(lemon)
             # Respawn ONLY if game is NOT paused and lemon was NOT clicked
-            if not game_paused and not lemon.clicked:
+            if not game_paused:
                 lemons.append(spawn_lemon(lemons))
         else:
             lemon.draw(screen)
