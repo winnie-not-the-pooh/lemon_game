@@ -25,7 +25,7 @@ font = pygame.font.SysFont(None, 36)
 big_font = pygame.font.SysFont(None, 48)
 
 # Load lemon and tree images
-lemon_img_raw = pygame.image.load("lemon.jpg")
+lemon_img_raw = pygame.image.load("lemon.JPG")
 LEMON_IMG = pygame.transform.scale(lemon_img_raw, (LEMON_WIDTH, LEMON_HEIGHT))
 tree_img_raw = pygame.image.load("tree.png").convert_alpha()
 tree_img = pygame.transform.scale(tree_img_raw, (WIDTH-100, HEIGHT-50))  # adjust size 
@@ -34,10 +34,10 @@ TREE_X = WIDTH // 2 - tree_img.get_width() // 2
 TREE_Y = HEIGHT - tree_img.get_height()
 
 # Play music
-pygame.mixer.music.load("background_music.mp3")  # ✅ Load your file
+pygame.mixer.music.load("background_music.ogg")  # ✅ Load your file
 pygame.mixer.music.play(-1)  # ✅ Loop forever
 
-goal_sound = pygame.mixer.Sound("goal_reached.wav")
+goal_sound = pygame.mixer.Sound("goal_reached.ogg")
 
 # Lemon class
 class Lemon:
