@@ -35,8 +35,8 @@ TREE_X = WIDTH // 2 - tree_img.get_width() // 2
 TREE_Y = HEIGHT - tree_img.get_height()
 
 # Play music
-pygame.mixer.music.load("background_music.ogg")  # ✅ Load your file
-pygame.mixer.music.play(-1)  # ✅ Loop forever
+pygame.mixer.music.load("background_music.ogg")  # Load your file
+pygame.mixer.music.play(-1)  # Loop forever
 
 goal_sound = pygame.mixer.Sound("goal_reached.ogg")
 
@@ -124,8 +124,8 @@ async def main():
             # Remove lemons that fall off screen
             if lemon.is_off_screen():
                 lemons.remove(lemon)
-                # Respawn ONLY if game is NOT paused and lemon was NOT clicked
-                if not game_paused and not lemon.clicked:
+                # Respawn ONLY if game is NOT paused 
+                if not game_paused:
                     lemons.append(spawn_lemon(lemons))
             else:
                 lemon.draw(screen)
